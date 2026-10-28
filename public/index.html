@@ -77,28 +77,20 @@
                 messageEl.style.color = "blue";
                 messageEl.textContent = "Processing...";
 
-                // Requests the backend API route
                 const response = await fetch(`/api/download?code=${code}`);
+                const data = await response.json();
                 
                 if (!response.ok) {
-                    const errData = await response.json();
                     messageEl.style.color = "red";
-                    messageEl.textContent = errData.message || "Invalid code.";
+                    messageEl.textContent = data.message || "Invalid code.";
                     return;
                 }
 
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `download_${code}.zip`;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                window.URL.revokeObjectURL(url);
+                // Open the download link in a new tab or trigger it directly
+                window.location.href = data.url;
 
                 messageEl.style.color = "green";
-                messageEl.textContent = "Download started!";
+                messageEl.textContent = "Download starting!";
             } catch (error) {
                 messageEl.style.color = "red";
                 messageEl.textContent = "An error occurred. Please try again.";
