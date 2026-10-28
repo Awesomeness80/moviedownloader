@@ -4,22 +4,20 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Serve your frontend HTML file
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Example database of 5-digit codes and their direct download links
+// Map your 5-digit codes directly to your free Google Drive links
 const codeDatabase = {
-    "12345": "https://your-cloud-storage-link.com/file1.zip",
-    "98765": "https://your-cloud-storage-link.com/file2.zip"
+    "32784": "https://drive.google.com/file/d/15x2QA7OignknD0LD086nsUiGpil3VSWN/view?usp=sharing",
+    "98765": "https://drive.google.com/uc?export=download&id=ANOTHER_FILE_ID_HERE"
 };
 
-// API endpoint that checks the code
 app.get('/api/download', (req, res) => {
     const code = req.query.code;
     const fileUrl = codeDatabase[code];
 
     if (fileUrl) {
-        // Redirect the user to the file download link
+        // Sends the user straight to the download
         res.redirect(fileUrl);
     } else {
         res.status(400).json({ message: "Invalid or expired 5-digit code." });
