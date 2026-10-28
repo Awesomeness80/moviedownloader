@@ -1,0 +1,13 @@
+{
+  "name": "media-downloader",
+  "version": "1.0.0",
+  "description": "5 digit code media downloader",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "archiver": "^6.0.1",
+    "express": "^4.19.2"
+  }
+}
