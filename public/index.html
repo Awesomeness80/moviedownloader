@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Media Downloader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+        }
+        input {
+            width: 80%;
+            padding: 10px;
+            font-size: 18px;
+            text-align: center;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #message {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Enter 5-Digit Code</h2>
+        <input type="text" id="codeInput" maxlength="5" placeholder="12345" />
+        <br>
+        <button onclick="downloadFiles()">Download ZIP</button>
+        <p id="message"></p>
+    </div>
+
+    <script>
+        async function downloadFiles() {
+            const code = document.getElementById('codeInput').value.trim();
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = "";
+
+            if (code.length !== 5) {
+                messageEl.style.color = "red";
+                messageEl.textContent = "Please enter a valid 5-digit code.";
+                return;
+            }
+
+            try {
+                messageEl.style.color = "blue";
+                messageEl.textContent = "Processing...";
+
+                // Requests the backend API route
+                const response = await fetch(`/api/download?code=${code}`);
+                
+                if (!response.ok) {
+                    const errData = await response.json();
+                    messageEl.style.color = "red";
+                    messageEl.textContent = errData.message || "Invalid code.";
+                    return;
+                }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `download_${code}.zip`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+
+                messageEl.style.color = "green";
+                messageEl.textContent = "Download started!";
+            } catch (error) {
+                messageEl.style.color = "red";
+                messageEl.textContent = "An error occurred. Please try again.";
+            }
+        }
+    </script>
+
+</body>
+</html>
